@@ -406,9 +406,263 @@ int main() {
 }*///avl
 
 //sass
+/*
+
+#include <vector>
+#include <map>
+#include <string>
+#include <iostream>
+
+using namespace std;
+
+class GraphNW {
+	int n;
+	vector<vector<char>> G;
+	map<string, int> names;
+	vector<string> revNames;
+
+public:
+	GraphNW(int n): n(n), G(n, vector<char>(n, 0)) {}
+	void addNode(string node) {
+		if (names.size() < n) {
+			names[node] = names.size();
+			revNames.push_back(node);
+		}
+	}
+	void addEdge(string nodeU, string nodeV) {
+		int u = names[nodeU];
+		int v = names[nodeV];
+		G[u][v] = 1;
+		G[v][u] = 1;
+	}
+	// búsqueda en profundidad
+	void dfs(string strs, string strt) {
+		int s = names[strs];
+		vector<bool> visited(n, false);
+		vector<int> path(n, -1);
+		visited[s] = true;
+		dfs(s, visited, path);
+		int fin = names[strt];
+		while (fin >= 0) {
+			cout << revNames[fin] << " <- ";
+			fin = path[fin];
+		}
+		cout << "\n";
+	}
+
+private:
+	void dfs(int s, vector<bool>& visited, vector<int>& path) {
+		for (int v = 0; v < n; ++v) {
+			if (G[s][v] != 0 && !visited[v]) {
+				visited[v] = true;
+				path[v] = s;
+				dfs(v, visited, path);
+			}
+		}
+	}
+};
+
+
+int main() {
+  GraphNW* g = new GraphNW(20);
+	g->addNode("Oradea");
+	g->addNode("Zerind");
+	g->addNode("Arad");
+	g->addNode("Timisoara");
+	g->addNode("Lugoj");
+	g->addNode("Mehadia");
+	g->addNode("Dobreta");
+	g->addNode("Craiova");
+	g->addNode("Rimnicu Vilcea");
+	g->addNode("Sibiu");
+	g->addNode("Fagaras");
+	g->addNode("Pitesti");
+	g->addNode("Bucharest");
+	g->addNode("Giurgiu");
+	g->addNode("Urziceni");
+	g->addNode("Hirsova");
+	g->addNode("Vaslui");
+	g->addNode("Neamt");
+	g->addNode("Iasi");
+	g->addNode("Eforie");
+	g->addEdge("Oradea", "Zerind");
+	g->addEdge("Oradea", "Sibiu");
+	g->addEdge("Zerind", "Arad");
+	g->addEdge("Arad", "Sibiu");
+	g->addEdge("Arad", "Timisoara");
+	g->addEdge("Timisoara", "Lugoj");
+	g->addEdge("Lugoj", "Mehadia");
+	g->addEdge("Mehadia", "Dobreta");
+	g->addEdge("Dobreta", "Craiova");
+	g->addEdge("Craiova", "Rimnicu Vilcea");
+	g->addEdge("Rimnicu Vilcea", "Sibiu");
+	g->addEdge("Craiova", "Pitesti");
+	g->addEdge("Rimnicu Vilcea", "Pitesti");
+	g->addEdge("Sibiu", "Fagaras");
+	g->addEdge("Fagaras", "Bucharest");
+	g->addEdge("Pitesti", "Bucharest");
+	g->addEdge("Bucharest", "Giurgiu");
+	g->addEdge("Bucharest", "Urziceni");
+	g->addEdge("Urziceni", "Hirsova");
+	g->addEdge("Urziceni", "Vaslui");
+	g->addEdge("Hirsova", "Eforie");
+	g->addEdge("Vaslui", "Iasi");
+	g->addEdge("Iasi", "Neamt");
+
+	g->dfs("Arad", "Timisoara");
+
+	return 0;
+}
+
+
+
+#include<iostream>
+#include<queue>
+using namespace std;
+
+struct Vertice {
+	string nomb;
+	int num;
+public:
+	Vertice() {}
+	Vertice(string nomb) :nomb(nomb), num(-1) {}
+	Vertice(string nomb, int num) :nomb(nomb), num(num) {}
+	bool igual_nombre(Vertice n) {
+		return nomb == n.nomb;
+	}
+	//onomVer RETORNAR NOMBRE
+	//PNOM    sET: CAM VERTICE
+	//IGUAL   IGUALDAD ENTRE NOMBRES
+	//oNUM  RETURN NUM
+	//PNUM   SET:CAM VERTIC
+};
+
+
+class GrafoMatriz {
+
+protected:
+	int Max_V;
+	int numVerts;
+	Vertice* verts;		//arrays de vertices
+	int** matAd;		//matriz de adyacencia
+public:
+	GrafoMatriz(int Max_V) :Max_V(Max_V) {
+
+		verts = new Vertice[Max_V];
+		matAd = new int* [Max_V];
+		numVerts = 0;
+		for (int i = 0; i < Max_V; i++)
+			matAd[i] = new int[Max_V];
+	}
+
+	GrafoMatriz() {
+		Max_V = 1;
+		GrafoMatriz(Max_V);
+	}
+
+	void nuevo_Vertice(string nomb) {
+		bool esta = num_Vertice(nomb) <= 0;
+		if (esta == false) {
+			Vertice v = Vertice(nomb, numVerts);
+			verts[numVerts++] = v;   //se asigna a la lista
+		}
+	}
+	// buscar vertice
+	int num_Vertice(string nomb) {
+
+		bool encontrado = false;
+		int i;
+		for (i = 0; (i < numVerts) && encontrado == false;) {
+			encontrado = verts[i].igual_nombre(nomb);
+			if (encontrado == false)i++;
+		}
+		return i < numVerts ? i : -1;
+	}
+
+	//existencia de arco 1 o 0
+	void nuevoArco(int va, int vb) {
+		if (va<0 || vb<0 || va>numVerts || vb>numVerts)return;
+		matAd[va][vb] = 1;
+	}
+
+
+	void nuevoArco_Peso(int va, int vb, int peso) {
+		if (va<0 || vb<0 || va>numVerts || vb>numVerts)return;
+		matAd[va][vb] = peso;
+	}
+
+	//por nombre
+	bool adyacente(string a, string b) {
+		int va, vb;
+		va = num_Vertice(a);
+		vb = num_Vertice(b);
+		if (va < 0 || vb < 0 || va >= numVerts || vb >= numVerts)return false;
+		return matAd[va][vb] = 1;
+
+	}
+	//por numeros
+	bool adyacente(int  va, int vb) {
+
+		if (va < 0 || vb < 0 || va >= numVerts || vb >= numVerts)return;
+		return matAd[va][vb] = 1;
+
+	}
+
+	Vertice* Get_ver() {
+		return verts;
+	}
+};
+
+enum Color { blanco, gris, negro };
+
+void dfs(GrafoMatriz G, int v) {
+	vector<bool>color(G.num_Vertice, blanco);
+	color[v] = gris;
+	for (auto& w : G.Get_ver[v])
+		if (color[w] == blanco)
+			dfs(G, w);
+	color[v] = negro;
+}
+
+void bfs(GrafoMatriz G, int inicial) {
+	vector<bool> color(G.num_Vertice, blanco);
+
+	queue<int> q;
+	q.push(inicial);
+	color[inicial] = gris;
+
+	while (!q.empty()) {
+		int v = q.front(); q.pop();
+		G.Get_ver()[v].num = negro;
+		for (auto& w : G.Get_ver[v])
+			if (color[w] == blanco) {
+				q.push(w);
+				color[w] = gris;
+			}
+	}
+
+}
+
+bool hasCycle(GrafoMatriz G, int v, int p = -1) {
+	vector<bool> visited = (false, G.num_Vertice);
+	visited[v] = true;
+	bool cycle = false;
+	for (auto& w : G.Get_ver[v])
+		if (!visited[w])
+			cycle |= hasCycle(w, v);
+		else if (w != p)
+			cycle = true;
+	return cycle;
+
+}
+
 int main() {
 
-	cout << "hola mundo";
+	int i = 3;
+	i |= 5;
+	bool s = t;
+	s |= false; cout << s << endl;
 
+	system("pause");
 	return 0;
 }
